@@ -35,4 +35,4 @@ dump-autoload:
 	docker compose ${ENV} exec php-fpm composer dump-autoload
 
 redis:
-	docker compose ${ENV} exec redis bash
+	docker compose ${ENV} exec redis sh

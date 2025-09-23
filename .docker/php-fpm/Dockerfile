@@ -13,6 +13,7 @@ RUN \
 WORKDIR /app
 
 ARG USER_ID
+RUN chmod -R 777 /var/www
 
 RUN /bin/bash -c "if [[ ${USER_ID} -ne 0 ]]; then usermod -u ${USER_ID} www-data; fi"
 
