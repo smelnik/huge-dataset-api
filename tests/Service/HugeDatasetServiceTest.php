@@ -10,6 +10,7 @@ use App\Service\HugeDatasetService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Redis;
+use Symfony\Component\Lock\SharedLockInterface;
 
 final class HugeDatasetServiceTest extends TestCase
 {
@@ -38,9 +39,9 @@ final class HugeDatasetServiceTest extends TestCase
 
         $cacheLock = $this->createMock(CacheLockInterface::class);
         if ($lockAcquired) {
-            $cacheLock->method('acquire')->willReturn(new class {
-                public function release(): void {}
-            });
+            $lockMock = $this->createMock(SharedLockInterface::class);
+            $lockMock->method('release');
+            $cacheLock->method('acquire')->willReturn($lockMock);
         } else {
             $cacheLock->method('acquire')->willReturn(null);
         }

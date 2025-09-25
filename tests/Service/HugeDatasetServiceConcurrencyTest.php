@@ -10,6 +10,7 @@ use App\Provider\DatasetProviderInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Redis;
+use Symfony\Component\Lock\SharedLockInterface;
 
 final class HugeDatasetServiceConcurrencyTest extends TestCase
 {
@@ -40,7 +41,9 @@ final class HugeDatasetServiceConcurrencyTest extends TestCase
         $lockObjects = [];
         foreach ($lockReturns as $acquired) {
             if ($acquired) {
-                $lockObjects[] = new class { public function release(): void {} };
+                $lockMock = $this->createMock(SharedLockInterface::class);
+                $lockMock->method('release');
+                $lockObjects[] = $lockMock;
             } else {
                 $lockObjects[] = null;
             }

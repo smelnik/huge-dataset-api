@@ -40,4 +40,9 @@ redis:
 test-unit:
 	docker compose ${ENV} exec php-fpm bash -c "vendor/bin/phpunit --colors=always --testdox"
 
+# To generate test coverage, edit .docker/php-fpm/php.ini and set:
+#   xdebug.mode=coverage
+test-coverage:
+	docker compose ${ENV} exec php-fpm bash -c "vendor/bin/phpunit --colors=always --testdox --coverage-text --coverage-html coverage/"
+
 test: test-unit
