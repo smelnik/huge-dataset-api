@@ -68,7 +68,7 @@ Although not mandatory, the following are highly recommended to improve usabilit
 * Install program `make`
 * Build and up all containers. App will be available on http://127.0.0.1:8000/.
 ```shell
-make biuld && make up
+make biuld && make up && make vendor-refresh
 ```
 * More commands see to `./Makefile`
 

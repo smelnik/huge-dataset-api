@@ -19,13 +19,13 @@
         "symfony/serializer": "7.3.*",
         "symfony/twig-bundle": "7.3.*",
         "symfony/yaml": "7.3.*",
-        "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/extra-bundle": "^2.12|^3.21",
+        "twig/twig": "^2.12|^3.21.1"
     },
     "require-dev": {
         "ext-curl": "*",
-        "nelmio/api-doc-bundle": "^5.6",
-        "phpunit/phpunit": "^12.3.13",
+        "nelmio/api-doc-bundle": "^5.6.2",
+        "phpunit/phpunit": "^12.3.14",
         "symfony/browser-kit": "7.3.*",
         "symfony/css-selector": "7.3.*",
         "symfony/maker-bundle": "^1.64",
