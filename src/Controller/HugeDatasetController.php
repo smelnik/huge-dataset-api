@@ -5,12 +5,12 @@ namespace App\Controller;
 
 use App\Enum\CacheStatus;
 use App\Service\HugeDatasetService;
-use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/api')]
 final class HugeDatasetController extends AbstractController
 {
     public function __construct(
@@ -18,7 +18,7 @@ final class HugeDatasetController extends AbstractController
     ) {}
 
     #[OA\Get(
-        path: '/process-huge-dataset',
+        path: '/api/process-huge-dataset',
         description: 'Generates or returns a cached huge dataset',
         summary: 'Process huge dataset',
         responses: [

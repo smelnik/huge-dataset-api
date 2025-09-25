@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class HugeDatasetControllerConcurrencyTest extends WebTestCase
 {
-    private array $curlParams = ['curl', '-s', '-i', 'http://nginx/process-huge-dataset'];
+    private array $curlParams = ['curl', '-s', '-i', 'http://nginx/api/process-huge-dataset'];
 
     private function clearCache(): void
     {

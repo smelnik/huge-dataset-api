@@ -10,7 +10,7 @@ final class HugeDatasetControllerTest extends WebTestCase
     public function testCacheHitOrMiss(): void
     {
         $client = self::createClient();
-        $client->request('GET', '/process-huge-dataset');
+        $client->request('GET', '/api/process-huge-dataset');
 
         $response = $client->getResponse();
         $this->assertContains($response->getStatusCode(), [200, 202]);
