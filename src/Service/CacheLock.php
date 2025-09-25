@@ -6,7 +6,7 @@ namespace App\Service;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\LockInterface;
 
-final readonly class CacheLock
+final readonly class CacheLock implements CacheLockInterface
 {
     public function __construct(private LockFactory $lockFactory) {}
 

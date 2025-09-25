@@ -36,3 +36,8 @@ dump-autoload:
 
 redis:
 	docker compose ${ENV} exec redis sh
+
+test-unit:
+	docker compose ${ENV} exec php-fpm bash -c "vendor/bin/phpunit --colors=always --testdox"
+
+test: test-unit

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Dto\Person;
 use App\Enum\CacheStatus;
 use App\Service\HugeDatasetService;
 use Nelmio\ApiDocBundle\Attribute\Model;
@@ -35,7 +34,17 @@ final class HugeDatasetController extends AbstractController
                 ],
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: new Model(type: Person::class))
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                            new OA\Property(property: 'name', type: 'string', example: 'Alice'),
+                        ],
+                        type: 'object'
+                    ),
+                    example: [
+                        ['id' => 1, 'name' => 'Alice'],
+                        ['id' => 2, 'name' => 'Bob'],
+                    ]
                 )
             ),
             new OA\Response(

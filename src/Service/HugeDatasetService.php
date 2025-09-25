@@ -12,13 +12,13 @@ use Redis;
 final readonly class HugeDatasetService
 {
     private const CACHE_KEY = 'huge_dataset';
-    private const CACHE_EXPIRE_TTL = 60;
+    public const CACHE_EXPIRE_TTL = 60;
     private const LOCK_KEY = 'huge_dataset_lock';
     private const LOCK_EXPIRE_TTL = 15;
 
     public function __construct(
         private Redis $redis,
-        private CacheLock $cacheLock,
+        private CacheLockInterface $cacheLock,
         private LoggerInterface $logger,
         private DatasetProviderInterface $datasetProvider,
     ) {}
