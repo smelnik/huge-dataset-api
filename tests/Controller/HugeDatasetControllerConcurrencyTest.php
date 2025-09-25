@@ -3,51 +3,69 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use App\Service\HugeDatasetService;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
+use Symfony\Component\Process\Process;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class HugeDatasetControllerConcurrencyTest extends WebTestCase
 {
-    private KernelBrowser $client;
+    private array $curlParams = ['curl', '-s', '-i', 'http://nginx/process-huge-dataset'];
 
-    protected function setUp(): void
+    private function clearCache(): void
     {
-        self::ensureKernelShutdown();
-        $this->client = self::createClient();
+        $redis = RedisAdapter::createConnection($_ENV['REDIS_URL']);
+        $redis->flushDB();
     }
 
-    private function requestDataset(): array
+    public function testCacheLifecycle(): void
     {
-        $this->client->request('GET', '/process-huge-dataset');
+        $this->clearCache();
 
-        $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
+        $p1 = new Process($this->curlParams);
+        $p1->start();
 
-        return [
-            'statusCode'   => $response->getStatusCode(),
-            'cacheStatus'  => $response->headers->get('X-Cache-Status'),
-            'data'         => $data,
-        ];
-    }
+        sleep(1);
 
-    public function testMultipleSequentialRequests(): void
-    {
-        // First request: no cache -> MISS (200)
-        $first = $this->requestDataset();
-        $this->assertSame(200, $first['statusCode']);
-        $this->assertContains($first['cacheStatus'], ['MISS', 'HIT']);
-        $this->assertIsArray($first['data']);
+        $p2 = new Process($this->curlParams);
+        $p2->mustRun();
+        $resp2 = $p2->getOutput();
+        $this->assertStringContainsString('HTTP/1.1 202 Accepted', $resp2);
+        $this->assertStringContainsString('X-Cache-Status: WARMING', $resp2);
 
-        // Second request: HIT / STALE / WARMING
-        $second = $this->requestDataset();
-        $this->assertContains($second['statusCode'], [200, 202]);
-        $this->assertContains($second['cacheStatus'], ['HIT', 'STALE', 'WARMING']);
-        $this->assertIsArray($second['data']);
+        $p1->wait();
+        $resp1 = $p1->getOutput();
+        $this->assertStringContainsString('HTTP/1.1 200', $resp1);
+        $this->assertStringContainsString('X-Cache-Status: MISS', $resp1);
 
-        // Third request: HIT
-        $third = $this->requestDataset();
-        $this->assertSame(200, $third['statusCode']);
-        $this->assertSame('HIT', $third['cacheStatus']);
-        $this->assertIsArray($third['data']);
+        $p3 = new Process($this->curlParams);
+        $p3->mustRun();
+        $resp3 = $p3->getOutput();
+        $this->assertStringContainsString('HTTP/1.1 200', $resp3);
+        $this->assertStringContainsString('X-Cache-Status: HIT', $resp3);
+
+        sleep(HugeDatasetService::CACHE_EXPIRE_TTL + 2);
+
+        $p4 = new Process($this->curlParams);
+        $p4->start();
+
+        sleep(1);
+
+        $p5 = new Process($this->curlParams);
+        $p5->mustRun();
+        $resp5 = $p5->getOutput();
+        $this->assertStringContainsString('HTTP/1.1 200', $resp5);
+        $this->assertStringContainsString('X-Cache-Status: STALE', $resp5);
+
+        $p4->wait();
+        $resp4 = $p4->getOutput();
+        $this->assertStringContainsString('HTTP/1.1 200', $resp4);
+        $this->assertStringContainsString('X-Cache-Status: MISS', $resp4);
+
+        $p6 = new Process($this->curlParams);
+        $p6->mustRun();
+        $resp6 = $p6->getOutput();
+        $this->assertStringContainsString('HTTP/1.1 200', $resp6);
+        $this->assertStringContainsString('X-Cache-Status: HIT', $resp6);
     }
 }

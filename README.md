@@ -66,7 +66,7 @@ Although not mandatory, the following are highly recommended to improve usabilit
 ### Steps for work:
 
 * Install program `make`
-* Build and up all containers. App will be available on http://127.0.0.1:8000/
+* Build and up all containers. App will be available on http://127.0.0.1:8000/.
 ```shell
 make biuld && make up
 ```
@@ -74,3 +74,9 @@ make biuld && make up
 
 ## Tests
 For test coverage of code please use PHPUnit.
+```shell
+make test
+```
+
+## OpenAPI Documentation
+OpenAPI Doc will be available on http://127.0.0.1:8000/api/doc
